@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "366943209862",
+    "project_id": "thebible-d8b0b",
+    "storage_bucket": "thebible-d8b0b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366943209862:android:a2a7a56d33a3527289c407",
+        "android_client_info": {
+          "package_name": "com.example.bible_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9AE52dBvX9RRSV5Jn7odZG3EN9xXJMh4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
