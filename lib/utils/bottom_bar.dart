@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bible_app/molecules/menu-bar.dart';
-import 'package:bible_app/pages/Book-Mark.dart';
-import 'package:bible_app/pages/home-page.dart';
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/molecules/menu_bar.dart';
+import 'package:bible_app/pages/book_mark.dart';
+import 'package:bible_app/pages/home_page.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +11,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({Key? key});
+  const BottomBar({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -61,7 +61,7 @@ class BottomBarTab extends State<BottomBar> {
       deviceId;
     });
 
-    print("Device ID: $deviceId");
+   
 
     final bookState = Provider.of<BookState>(context, listen: false);
     bookState.getBookMarkbydeviceId(deviceId);
@@ -93,7 +93,7 @@ class BottomBarTab extends State<BottomBar> {
           fontWeight: FontWeight.bold,
         ),
         activeColorPrimary: Colors.red[700]!,
-        inactiveIcon: Icon(Icons.bookmark, size: 30, color: Colors.black),
+        inactiveIcon: const Icon(Icons.bookmark, size: 30, color: Colors.black),
       ),
       PersistentBottomNavBarItem(
           icon: Icon(Icons.menu, size: 30, color: Colors.red[700]),
@@ -103,7 +103,7 @@ class BottomBarTab extends State<BottomBar> {
             fontWeight: FontWeight.bold,
           ),
           activeColorPrimary: Colors.red[700]!,
-          inactiveIcon: Icon(Icons.menu, size: 30, color: Colors.black),
+          inactiveIcon: const Icon(Icons.menu, size: 30, color: Colors.black),
           // Assign the function to open the side menu drawer
           onPressed: (_) {
             _openSideMenuDrawer();
@@ -115,7 +115,7 @@ class BottomBarTab extends State<BottomBar> {
     return [
       const MyHomePage(),
       const BookMarkPage(),
-      SideMenu()
+      const SideMenu()
     ];
   }
 
@@ -123,7 +123,7 @@ class BottomBarTab extends State<BottomBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: SideMenu(),
+      drawer: const SideMenu(),
       endDrawerEnableOpenDragGesture: false,
       body: PersistentTabView(
         context,
@@ -138,7 +138,7 @@ class BottomBarTab extends State<BottomBar> {
             topRight: Radius.circular(20),
           ),
         ),
-        backgroundColor: Color(0xFFFFCDD2),
+        backgroundColor:const  Color(0xFFFFCDD2),
         popAllScreensOnTapOfSelectedTab: true,
         popActionScreens: PopActionScreensType.all,
         navBarStyle: NavBarStyle.style6,

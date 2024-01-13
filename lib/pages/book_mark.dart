@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:bible_app/atom/bookmark.dart';
-import 'package:bible_app/state-management/book-chapters-state.dart';
-import 'package:bible_app/utils/bottom-bar.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info/device_info.dart';
-
-import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:share_plus/share_plus.dart';
@@ -17,6 +15,7 @@ class BookMarkPage extends StatefulWidget {
   const BookMarkPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _BookMarkPageState createState() => _BookMarkPageState();
 }
 
@@ -26,7 +25,7 @@ class _BookMarkPageState extends State<BookMarkPage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       initializeAsyncLogic();
     });
     String platform = Platform.isAndroid ? "android" : "ios";
@@ -64,7 +63,7 @@ class _BookMarkPageState extends State<BookMarkPage> {
       deviceId;
     });
 
-    print("Device ID: $deviceId");
+  
 
     final bookState = Provider.of<BookState>(context, listen: false);
     await bookState.getBookMarkbydeviceId(deviceId);
@@ -76,7 +75,7 @@ class _BookMarkPageState extends State<BookMarkPage> {
       builder: (context, bookState, child) => Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red[700],
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme:const IconThemeData(color: Colors.white),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -92,7 +91,7 @@ class _BookMarkPageState extends State<BookMarkPage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.share),
+                icon: const Icon(Icons.share),
                 color: Colors.white,
                 onPressed: () {
                   Share.share(bookState.shareableLink);

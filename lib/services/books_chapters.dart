@@ -29,7 +29,8 @@ class BookService {
       );
       return response;
     } catch (err) {
-      if (err is DioError) {
+      
+      if (err is  DioException) {
         return err.response!;
       }
       rethrow;
@@ -61,7 +62,8 @@ class BookService {
       );
       return response;
     } catch (error) {
-      if (error is DioError) {
+    
+      if (error is  DioException) {
         return error.response!;
       }
       rethrow;
@@ -106,7 +108,7 @@ class BookService {
       );
       return response;
     } catch (error) {
-      if (error is DioError) {
+      if (error is  DioException) {
         return error.response!;
       }
       rethrow;
@@ -120,7 +122,7 @@ class BookService {
       );
       return response;
     } catch (err) {
-      if (err is DioError) {
+      if (err is DioException) {
         return err.response!;
       }
       rethrow;
@@ -134,7 +136,7 @@ class BookService {
       );
       return response;
     } catch (err) {
-      if (err is DioError) {
+      if (err is  DioException) {
         return err.response!;
       }
       rethrow;
@@ -151,7 +153,7 @@ Future<Response> saveFcmToken(String userDevice, String fcmToken) async {
       );
       return response;
     } catch (error) {
-      if (error is DioError) {
+      if (error is  DioException) {
         return error.response!;
       }
       rethrow;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AlertBundle {
+  // ignore: non_constant_identifier_names
   SnackBarNotify(BuildContext context, String message) {
     final snackBar = SnackBar(
       content: Text(message),
@@ -24,7 +25,7 @@ class AlertBundle {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

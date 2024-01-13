@@ -1,4 +1,4 @@
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +10,7 @@ class TextPage extends StatefulWidget {
 
   const TextPage({super.key, required this.title, required this.style});
   @override
+  // ignore: library_private_types_in_public_api
   _TextPageState createState() => _TextPageState();
 }
 
@@ -35,7 +36,7 @@ class _TextPageState extends State<TextPage> {
                     color: Colors.white,
                   ),
                 ),
-                iconTheme: IconThemeData(color: Colors.white),
+                iconTheme: const IconThemeData(color: Colors.white),
                 backgroundColor: Colors.red,
               ),
               body: ListView.builder(

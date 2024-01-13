@@ -1,11 +1,11 @@
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
 
 class AudioPlayerService with ChangeNotifier {
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
   bool _isLoading = false;
   String? _currentPlayingBookmarkId;
@@ -41,7 +41,7 @@ class AudioPlayerService with ChangeNotifier {
 class BookMarkCard extends StatelessWidget {
   final Map<String, dynamic> data;
 
-  BookMarkCard({super.key, required this.data});
+  const BookMarkCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class BookMarkCard extends StatelessWidget {
                   child: Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         image: AssetImage('assets/images/book.png'),

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bible_app/state-management/book-chapters-state.dart';
-import 'package:bible_app/utils/bottom-bar.dart';
-import 'package:bible_app/utils/notification-handler.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
+
+import 'package:bible_app/utils/notification_handler.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,10 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
       deviceId;
     });
 
-    print("Device ID: $deviceId");
+  
     String fcmToken = await NotificationHandler().getFcmToken();
+    // ignore: use_build_context_synchronously
     final bookState = Provider.of<BookState>(context, listen: false);
-    bookState.SaveToken(deviceId, fcmToken);
+    bookState.saveToken(deviceId, fcmToken);
   }
 
   @override

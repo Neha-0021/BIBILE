@@ -1,8 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:io';
 
 import 'package:bible_app/atom/books.dart';
 import 'package:bible_app/atom/chapter.dart';
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
 
 import 'package:flutter/material.dart';
@@ -69,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final bookState = Provider.of<BookState>(context, listen: false);
+  
 
     return Consumer<BookState>(
       builder: (context, bookState, child) => DefaultTabController(
@@ -101,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     labels: const ['Old', 'New'],
                     radiusStyle: true,
                     onToggle: (index) async {
-                      print('switched to: $index');
+                     
                       setState(() {
                         _toggleIndex = index!;
                       });
@@ -124,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               bookState.getSelectedCellIndex(
                                   bookState.selectedBookId)]["_id"];
                           String deviceId = _deviceId;
-                          print('Device ID: $_deviceId\n');
+                         
                           bookState.addBookmark(
                               chapterId, deviceId, context);
                         }
@@ -143,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.share),
+                  icon: const Icon(Icons.share),
                   color: Colors.white,
                   onPressed: () {
                     // Use the share package to share content
@@ -184,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ? 'old'
                           : (_toggleIndex == 1 ? 'new' : 'all')),
                 ),
-                Chapter(),
+                const Chapter(),
               ],
             ),
           ),

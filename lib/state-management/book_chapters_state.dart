@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:bible_app/services/books-chapters.dart';
+import 'package:bible_app/services/books_chapters.dart';
 import 'package:bible_app/utils/alert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
@@ -75,7 +75,7 @@ class BookState extends ChangeNotifier {
 
   bool _isBookMarked = false;
 
-  Map<String, int> _selectedCellIndices = {};
+  final Map<String, int> _selectedCellIndices = {};
 
   int getSelectedCellIndex(String bookId) {
     return _selectedCellIndices.containsKey(bookId)
@@ -121,11 +121,15 @@ class BookState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearChapters() {
+    chapter.clear();
+    notifyListeners();
+  }
+
   String? getSelectedBookTitle() {
     // Assuming you have a property named 'selectedBookId' in your class
     String? selectedBookId = this.selectedBookId;
 
-    // Find the book with the selected ID in your list of books
     Map<String, dynamic>? selectedBook = books.firstWhere(
         (book) => book['_id'] == selectedBookId,
         orElse: () => null);
@@ -168,11 +172,15 @@ class BookState extends ChangeNotifier {
       Response response = await service.getAllBooks();
 
       books = response.data["books"];
-      print('Response from API: ${response.data}');
+      if (kDebugMode) {
+        print('Response from API: ${response.data}');
+      }
 
       notifyListeners();
     } catch (error) {
-      print('Error fetching books: $error');
+      if (kDebugMode) {
+        print('Error fetching books: $error');
+      }
     }
   }
 
@@ -182,11 +190,15 @@ class BookState extends ChangeNotifier {
 
       books = response.data["books"];
 
-      print('Response from API: ${response.data}');
+      if (kDebugMode) {
+        print('Response from API: ${response.data}');
+      }
 
       notifyListeners();
     } catch (error) {
-      print('Error fetching books: $error');
+      if (kDebugMode) {
+        print('Error fetching books: $error');
+      }
     }
   }
 
@@ -196,27 +208,42 @@ class BookState extends ChangeNotifier {
 
       texts = response.data["text"];
 
-      print('Response from API: ${response.data}');
+      if (kDebugMode) {
+        print('Response from API: ${response.data}');
+      }
 
       notifyListeners();
     } catch (error) {
-      print('Error fetching books: $error');
+      if (kDebugMode) {
+        print('Error fetching books: $error');
+      }
     }
   }
 
   Future<void> getChapterBybookId(String bookId) async {
     try {
       Response response = await service.getChapterByBookId(bookId);
+
       Map<String, dynamic> responseData =
           Map<String, dynamic>.from(response.data);
-      print('Response : ${responseData}');
-      bookDetails = Map<String, dynamic>.from(responseData["book"]);
+      if (kDebugMode) {
+        print('Response: $responseData');
+      }
 
-      chapter = responseData["book"]["chapters"];
+      if (responseData.containsKey("book")) {
+        bookDetails = Map<String, dynamic>.from(responseData["book"]);
+        chapter = responseData["book"]["chapters"];
+      } else {
+        chapter = [];
+      }
 
       notifyListeners();
     } catch (error) {
-      print('Error fetching chapters: $error');
+      if (kDebugMode) {
+        print('Error fetching chapters: $error');
+      }
+
+      chapter = [];
     }
   }
 
@@ -234,7 +261,9 @@ class BookState extends ChangeNotifier {
 
       notifyListeners();
     } catch (error) {
-      print('Error adding bookmark: $error');
+      if (kDebugMode) {
+        print('Error adding bookmark: $error');
+      }
     }
   }
 
@@ -245,10 +274,14 @@ class BookState extends ChangeNotifier {
       Response response = await service.getBookMarkbydeviceId(deviceId);
 
       bookmark = response.data["bookmark"];
-      print('Response  API: ${response.data}');
+      if (kDebugMode) {
+        print('Response  API: ${response.data}');
+      }
       notifyListeners();
     } catch (error) {
-      print('Error fetching bookmark: $error');
+      if (kDebugMode) {
+        print('Error fetching bookmark: $error');
+      }
     }
   }
 
@@ -266,10 +299,12 @@ class BookState extends ChangeNotifier {
         }
       }
 
-      print('get bookmark : ${response.data}');
+     
       notifyListeners();
     } catch (error) {
-      print('Error fetching bychapter: $error');
+      if (kDebugMode) {
+        print('Error fetching bychapter: $error');
+      }
     }
   }
 
@@ -284,7 +319,9 @@ class BookState extends ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
-      print('Error sharing app link: $error');
+      if (kDebugMode) {
+        print('Error sharing app link: $error');
+      }
     }
   }
 
@@ -294,12 +331,16 @@ class BookState extends ChangeNotifier {
 
       Map<String, dynamic> responseData = response.data;
 
-      print('share app link: $responseData');
+      if (kDebugMode) {
+        print('share app link: $responseData');
+      }
       shareableLink = responseData["shareableLink"];
-      print('Response  share: ${response.data}');
+    
       notifyListeners();
     } catch (error) {
-      print('Error fetching bookmark: $error');
+      if (kDebugMode) {
+        print('Error fetching bookmark: $error');
+      }
     }
   }
 
@@ -314,14 +355,18 @@ class BookState extends ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
-      print('Error sharing app link: $error');
+      if (kDebugMode) {
+        print('Error sharing app link: $error');
+      }
     }
   }
 
-  Future<dynamic> SaveToken(String userDevice, String fcmToken) async {
+  Future<dynamic> saveToken(String userDevice, String fcmToken) async {
     Response response = await service.saveFcmToken(userDevice, fcmToken);
     if (response.statusCode == 200) {
-      print("save successfully");
+      if (kDebugMode) {
+        print("save successfully");
+      }
     }
     return {
       "code": response.statusCode,

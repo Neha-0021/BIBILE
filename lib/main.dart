@@ -1,13 +1,13 @@
 import 'package:bible_app/atom/bookmark.dart';
-import 'package:bible_app/molecules/menu-bar.dart';
-import 'package:bible_app/pages/Book-Mark.dart';
-import 'package:bible_app/pages/home-page.dart';
-import 'package:bible_app/pages/splashScreen.dart';
+import 'package:bible_app/molecules/menu_bar.dart';
+import 'package:bible_app/pages/book_mark.dart';
+import 'package:bible_app/pages/home_page.dart';
+import 'package:bible_app/pages/splash.dart';
 
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:bible_app/utils/bottom-bar.dart';
-import 'package:bible_app/utils/notification-handler.dart';
+import 'package:bible_app/utils/bottom_bar.dart';
+import 'package:bible_app/utils/notification_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,10 +51,10 @@ class MyAppComponent extends State<MyApp> {
           title: 'BIBLE APP',
           initialRoute: 'splash',
           routes: {
-            'Home': (context) => MyHomePage(),
-            'Book': (context) => BookMarkPage(),
-            'Menu': (context) => SideMenu(),
-            'bottom': (context) =>  BottomBar(),
+            'Home': (context) => const MyHomePage(),
+            'Book': (context) => const BookMarkPage(),
+            'Menu': (context) => const SideMenu(),
+            'bottom': (context) =>  const BottomBar(),
             'splash':(context)=>const SplashScreen(),
           },
            

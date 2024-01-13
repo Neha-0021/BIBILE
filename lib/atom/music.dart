@@ -4,12 +4,14 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:bible_app/state-management/book-chapters-state.dart';
+import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter/services.dart'; // Import this
 
 class MusicPlayer extends StatefulWidget {
+  const MusicPlayer({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MusicPlayerState createState() => _MusicPlayerState();
 }
 
@@ -19,26 +21,26 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     final bookState = Provider.of<BookState>(context, listen: false);
 
     bookState.audioPlayer.onPlayerStateChanged.listen((state) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           bookState.setIsPlaying(state);
         });
       }
     });
     bookState.audioPlayer.onDurationChanged.listen((d) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           bookState.setDuration(d);
         });
       }
     });
     bookState.audioPlayer.onPositionChanged.listen((p) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           bookState.setPosition(p);
         });
@@ -50,7 +52,7 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
 
     stop;
     super.dispose();
@@ -177,21 +179,23 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
                         decoration: TextDecoration.none,
                       ),
                     ),
-                    for (var book in chapterState.books)
-                      if (chapterState.getSelectedCellIndex(book['_id']) != -1)
-                        TextSpan(
-                          text: chapterState
-                                      .getSelectedCellIndex(book['_id']) ==
-                                  0
-                              ? '${book["title"]} ${chapterTitle[chapterState.getSelectedCellIndex(book['_id'])]}'
-                              : '${book["title"]} ${chapterTitles[chapterState.getSelectedCellIndex(book['_id'])]}',
-                          style: GoogleFonts.lato(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            decoration: TextDecoration.none,
+                    if (chapterState.chapter.isNotEmpty)
+                      for (var book in chapterState.books)
+                        if (chapterState.getSelectedCellIndex(book['_id']) !=
+                            -1)
+                          TextSpan(
+                            text: chapterState
+                                        .getSelectedCellIndex(book['_id']) ==
+                                    0
+                                ? '${book["title"]} ${chapterTitle[chapterState.getSelectedCellIndex(book['_id'])]}'
+                                : '${book["title"]} ${chapterTitles[chapterState.getSelectedCellIndex(book['_id'])]}',
+                            style: GoogleFonts.lato(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              decoration: TextDecoration.none,
+                            ),
                           ),
-                        ),
                   ],
                 ),
               ),
@@ -255,7 +259,6 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
                 onTap: isCellTextSelected
                     ? () async {
                         // Get the currently selected book ID
-                        String selectedBookId = chapterState.selectedBookId;
 
                         // Find the index of the selected book in the list
                         int currentIndex = chapterState.getSelectedBookIndex();
@@ -270,35 +273,39 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
 
                         // Set the selected book index to the previous book
                         chapterState.setSelectedBookIndex(previousBookIndex);
-                        Provider.of<BookState>(context, listen: false)
-                            .notifyListeners();
+                        Provider.of<BookState>(context, listen: false);
+
                         // Fetch chapters for the selected book
                         await chapterState.getChapterBybookId(previousBookId);
-                        int lastChapterIndex = chapterState.chapter.length - 1;
-                        // Set the selected book index to the last chapter of the previous book
-                        chapterState.setSelectedCellIndices(
-                            previousBookId, lastChapterIndex);
+                        if (chapterState.chapter.isNotEmpty) {
+                          int lastChapterIndex =
+                              chapterState.chapter.length - 1;
+                          // Set the selected book index to the last chapter of the previous book
+                          chapterState.setSelectedCellIndices(
+                              previousBookId, lastChapterIndex);
 
-                        // Fetch the audio URL for the last chapter of the previous book
-                        String audioUrl = audioUrls.last;
+                          // Fetch the audio URL for the last chapter of the previous book
+                          String audioUrl = audioUrls.last;
 
-                        chapterState.play(audioUrl, previousBookId);
+                          chapterState.play(audioUrl, previousBookId);
 
-                        // Fetch chapterId and deviceId
-                        String chapterId = chapterState.chapter[chapterState
-                            .getSelectedCellIndex(previousBookId)]["_id"];
-                        String deviceId = _deviceId;
+                          // Fetch chapterId and deviceId
+                          String chapterId = chapterState.chapter[chapterState
+                              .getSelectedCellIndex(previousBookId)]["_id"];
+                          String deviceId = _deviceId;
 
-                        // Call getBookmarkbychapterIddeviceId API
-                        chapterState.getBookMarkbychapterIddeviceId(
-                            chapterId, deviceId);
+                          // Call getBookmarkbychapterIddeviceId API
+                          chapterState.getBookMarkbychapterIddeviceId(
+                              chapterId, deviceId);
+                        } else {
+                          "";
+                        }
                       }
                     : null,
                 child: SvgPicture.asset(
                   "assets/images/svg/Previous_Book.svg",
                   height: 30,
                   width: 30,
-                  color: Colors.red,
                 ),
               ),
             ),
@@ -312,11 +319,11 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
                 "assets/images/svg/02._Previous_Chapter.svg",
                 height: 30,
                 width: 30,
-                color: Colors.red,
+             
               ),
             ),
             chapterState.isLoading
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Colors.red,
@@ -354,55 +361,58 @@ class _MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
                 "assets/images/svg/04._Previous_Chapter.svg",
                 height: 30,
                 width: 30,
-                color: Colors.red,
+               
               ),
             ),
             GestureDetector(
               onTap: isCellTextSelected
-            ? () async {
-                // Get the currently selected book ID
-                String selectedBookId = chapterState.selectedBookId;
+                  ? () async {
+                      // Get the currently selected book ID
 
-                // Find the index of the selected book in the list
-                int currentIndex = chapterState.getSelectedBookIndex();
+                      // Find the index of the selected book in the list
+                      int currentIndex = chapterState.getSelectedBookIndex();
 
-                // Calculate the index of the next book in a circular manner
-                int nextBookIndex =
-                    (currentIndex + 1) % chapterState.books.length;
+                      // Calculate the index of the next book in a circular manner
+                      int nextBookIndex =
+                          (currentIndex + 1) % chapterState.books.length;
 
-                // Get the ID of the next book
-                String nextBookId = chapterState.books[nextBookIndex]["_id"];
+                      // Get the ID of the next book
+                      String nextBookId =
+                          chapterState.books[nextBookIndex]["_id"];
 
-                // Set the selected book index to the next book
-                chapterState.setSelectedBookIndex(nextBookIndex);
-                Provider.of<BookState>(context, listen: false)
-                    .notifyListeners();
-                // Fetch chapters for the selected book
-                await chapterState.getChapterBybookId(nextBookId);
+                      // Set the selected book index to the next book
+                      chapterState.setSelectedBookIndex(nextBookIndex);
 
-                // Set the selected book index to the first chapter of the next book
-                chapterState.setSelectedCellIndices(nextBookId, 0);
+                      // Fetch chapters for the selected book
+                      await chapterState.getChapterBybookId(nextBookId);
 
-                // Fetch the audio URL for the first chapter of the next book
-                String audioUrl = audioUrls.first;
+                      if (chapterState.chapter.isNotEmpty) {
+                        chapterState.setSelectedCellIndices(nextBookId, 0);
 
-                chapterState.play(audioUrl, nextBookId);
+                        // Fetch the audio URL for the first chapter of the next book
+                        String audioUrl = audioUrls.first;
 
-                // Fetch chapterId and deviceId
-                String chapterId = chapterState
-                        .chapter[chapterState.getSelectedCellIndex(nextBookId)]
-                    ["_id"];
-                String deviceId = _deviceId;
+                        chapterState.play(audioUrl, nextBookId);
 
-                // Call getBookmarkbychapterIddeviceId API
-                chapterState.getBookMarkbychapterIddeviceId(
-                    chapterId, deviceId);
-              }:null,
+                        // Fetch chapterId and deviceId
+                        String chapterId = chapterState.chapter[chapterState
+                            .getSelectedCellIndex(nextBookId)]["_id"];
+                        String deviceId = _deviceId;
+
+                        // Call getBookmarkbychapterIddeviceId API
+                        chapterState.getBookMarkbychapterIddeviceId(
+                            chapterId, deviceId);
+                      } else {
+                        
+                        
+                      }
+                    }
+                  : null,
               child: SvgPicture.asset(
                 "assets/images/svg/Previous_Book.svg",
                 height: 30,
                 width: 30,
-                color: Colors.red,
+              
               ),
             ),
           ],

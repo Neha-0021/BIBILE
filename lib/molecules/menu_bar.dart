@@ -1,16 +1,19 @@
 import 'dart:io';
 
 import 'package:bible_app/molecules/preface.dart';
-import 'package:bible_app/pages/home-page.dart';
-import 'package:bible_app/state-management/book-chapters-state.dart';
-import 'package:bible_app/utils/bottom-bar.dart';
+
+import 'package:bible_app/state-management/book_chapters_state.dart';
+import 'package:bible_app/utils/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SideMenu extends StatefulWidget {
+  const SideMenu({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _SideMenuState createState() => _SideMenuState();
 }
 
