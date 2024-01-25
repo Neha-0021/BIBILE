@@ -61,6 +61,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   persistent_bottom_nav_bar_v2: ^4.2.8
   firebase_core: ^2.24.2
+  toast: ^0.3.0
   
 
 dev_dependencies:

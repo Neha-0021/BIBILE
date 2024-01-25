@@ -1,50 +1,22 @@
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
 
-class AudioPlayerService with ChangeNotifier {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
-  bool _isLoading = false;
-  String? _currentPlayingBookmarkId;
-
-  bool get isPlaying => _isPlaying;
-  bool get isLoading => _isLoading;
-  AudioPlayer get audioPlayer => _audioPlayer;
-  String? get currentPlayingBookmarkId => _currentPlayingBookmarkId;
-
-  Future<void> togglePlayPause(String bookmarkId, String audioUrl) async {
-    if (_currentPlayingBookmarkId == bookmarkId) {
-      if (_isPlaying) {
-        await _audioPlayer.pause();
-      } else {
-        await _audioPlayer.resume();
-      }
-    } else {
-      _isLoading = true;
-      await _audioPlayer.stop();
-
-      await _audioPlayer.play(UrlSource(audioUrl));
-      _currentPlayingBookmarkId = bookmarkId;
-
-      _isLoading = false;
-    }
-
-    _isPlaying = !_isPlaying;
-
-    notifyListeners();
-  }
-}
-
-class BookMarkCard extends StatelessWidget {
+class BookMarkCard extends StatefulWidget {
   final Map<String, dynamic> data;
 
-  const BookMarkCard({super.key, required this.data});
+  const BookMarkCard({Key? key, required this.data}) : super(key: key);
 
   @override
+  _BookMarkCardState createState() => _BookMarkCardState();
+}
+
+class _BookMarkCardState extends State<BookMarkCard> {
+  @override
   Widget build(BuildContext context) {
+    final chapterState = Provider.of<BookState>(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -70,7 +42,7 @@ class BookMarkCard extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    "${data["bookDetails"]["title"]} - ${data["chapterDetails"]["chapterNumber"]}",
+                    "${widget.data["bookDetails"]["title"]} - ${widget.data["chapterDetails"]["chapterNumber"]}",
                     style: GoogleFonts.lato(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -78,34 +50,31 @@ class BookMarkCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Consumer<AudioPlayerService>(
-                  builder: (context, audioPlayerService, _) {
-                    bool isPlaying = audioPlayerService.isPlaying;
-                    String? currentPlayingBookmarkId =
-                        audioPlayerService.currentPlayingBookmarkId;
-                    bool isThisCardPlaying =
-                        currentPlayingBookmarkId == data["_id"];
-                    IconData icon = isThisCardPlaying && isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow;
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.red[700],
+                  child: IconButton(
+                    icon: Icon(
+                      chapterState.isPlaying &&
+                              chapterState.selectedBookId == widget.data["_id"]
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      size: 35,
+                    ),
+                    color: Colors.white,
+                    onPressed: () async {
+                      String bookmarkId = widget.data["_id"];
+                      String audioUrl =
+                          widget.data["chapterDetails"]["audioUrl"];
 
-                    return CircleAvatar(
-                      backgroundColor: Colors.red,
-                      radius: 20,
-                      child: IconButton(
-                        icon: Icon(
-                          icon,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          Provider.of<AudioPlayerService>(context,
-                                  listen: false)
-                              .togglePlayPause(data["_id"],
-                                  data["chapterDetails"]["audioUrl"]);
-                        },
-                      ),
-                    );
-                  },
+                      if (chapterState.isPlaying &&
+                          chapterState.selectedBookId == bookmarkId) {
+                        chapterState.stopPlaying();
+                      } else {
+                        chapterState.play(audioUrl, bookmarkId);
+                      }
+                    },
+                  ),
                 ),
                 Expanded(
                   flex: 1,
@@ -116,7 +85,7 @@ class BookMarkCard extends StatelessWidget {
                     ),
                     onPressed: () {
                       Provider.of<BookState>(context, listen: false)
-                          .removeBookmarkById(data["_id"], context);
+                          .removeBookmarkById(widget.data["_id"], context);
                     },
                   ),
                 ),

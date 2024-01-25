@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:bible_app/atom/music.dart';
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:toast/toast.dart';
 
 class Chapters extends StatefulWidget {
   final String? bookId;
@@ -21,35 +23,25 @@ class Chapters extends StatefulWidget {
 
 class _ChaptersState extends State<Chapters> {
   String _deviceId = 'Unknown';
-  Timer? selcetedBookChapter;
   bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async {
       if (mounted) {
-        checkSelectedBook();
-        initPlatformState();
+        await checkSelectedBook();
+      }
+      await initPlatformState();
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(covariant Chapters oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Check if bookId has changed, then call checkSelectedBook
-    if (widget.bookId != oldWidget.bookId) {
-      checkSelectedBook();
-    }
-  }
-
-  void checkSelectedBook() {
+  Future<void> checkSelectedBook() async {
     final bookState = Provider.of<BookState>(context, listen: false);
 
     String defaultBookId =
@@ -59,11 +51,7 @@ class _ChaptersState extends State<Chapters> {
     bookState.getSelectedCellIndex(selectedBookId);
 
     // Fetch chapters for the selected book
-    bookState.getChapterBybookId(selectedBookId);
-
-    setState(() {
-      isLoading = false;
-    });
+    await bookState.getChapterBybookId(selectedBookId);
   }
 
   Future<void> initPlatformState() async {
@@ -143,11 +131,12 @@ class _ChaptersState extends State<Chapters> {
                                       chapterState.getSelectedCellIndex(
                                           chapterState.selectedBookId)]["_id"];
                                   String deviceId = _deviceId;
-
+print("$deviceId");
                                   chapterState.addBookmark(
                                       chapterId, deviceId, context);
                                 }
-                              : null, // Set onPressed to null when no cell text is selected
+                              : () => showToast(
+                                  "No audio is playing, please play any chapter first"), // Set onPressed to null when no cell text is selected
                           icon: Icon(
                             chapterState.isBookMarked
                                 ? Icons.bookmark
@@ -186,33 +175,14 @@ class _ChaptersState extends State<Chapters> {
                           vertical: 30, horizontal: 15),
                       child: isLoading
                           ? const Center(
-                              child:
-                                  CircularProgressIndicator(), // Loading indicator
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.red,
+                                ),
+                              ),
                             )
-                          : chapterTitles.isEmpty
-                              ? Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 40),
-                                    child: Container(
-                                      color: Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 40),
-                                        child: Text(
-                                          'No chapter available for this book',
-                                          style: GoogleFonts.lato(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : SingleChildScrollView(
+                          : chapterTitles.isNotEmpty
+                              ? SingleChildScrollView(
                                   scrollDirection: Axis.vertical,
                                   child: Table(
                                     columnWidths: {
@@ -260,6 +230,9 @@ class _ChaptersState extends State<Chapters> {
                                                           ["_id"];
 
                                                   String deviceId = _deviceId;
+                                                  if (kDebugMode) {
+                                                    print(deviceId);
+                                                  }
                                                   chapterState
                                                       .getBookMarkbychapterIddeviceId(
                                                           chapterId, deviceId);
@@ -308,6 +281,28 @@ class _ChaptersState extends State<Chapters> {
                                       );
                                     }),
                                   ),
+                                )
+                              : Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 40),
+                                        child: Text(
+                                          'No chapter available for this book',
+                                          style: GoogleFonts.lato(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                     ),
                   ),
@@ -320,5 +315,9 @@ class _ChaptersState extends State<Chapters> {
                 ],
               ),
             )));
+  }
+
+  void showToast(String msg, {int? duration, int? gravity}) {
+    Toast.show(msg, duration: duration, gravity: gravity);
   }
 }

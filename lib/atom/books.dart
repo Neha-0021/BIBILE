@@ -1,6 +1,7 @@
 import 'package:bible_app/atom/music.dart';
 import 'package:bible_app/molecules/chapters.dart';
 import 'package:bible_app/state-management/book_chapters_state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -16,12 +17,17 @@ class Books extends StatefulWidget {
 }
 
 class _BooksState extends State<Books> {
-  bool isLoading = true; // Track whether data is loading or not
-
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
+
     fetchBooks();
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void fetchBooks() async {
@@ -32,10 +38,6 @@ class _BooksState extends State<Books> {
     } else if (widget.selectedType == 'old') {
       await bookState.getBooksByType('old');
     }
-
-    setState(() {
-      isLoading = false; // Set loading to false when data is loaded
-    });
   }
 
   @override
@@ -93,34 +95,34 @@ class _BooksState extends State<Books> {
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: isLoading
                         ? const Center(
-                            child:
-                                CircularProgressIndicator(), // Loading indicator
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.red,
+                              ),
+                            ),
                           )
                         : bookTitles.isEmpty
                             ? Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 40),
-                                      child: Text(
-                                        widget.selectedType == 'new'
-                                            ? 'New Testament audio version is under development. Soon it will be available.'
-                                            : 'Old Testament audio version is under development. Soon it will be available.',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
+                                    child: Container(
+                                        color: Colors.white,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 40),
+                                          child: Text(
+                                            widget.selectedType == 'new'
+                                                ? 'New Testament audio version is under development.It will be available soon.'
+                                                : 'Old Testament audio version is under development.It will be available soon.',
+                                            style: GoogleFonts.lato(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ))))
                             : SingleChildScrollView(
                                 scrollDirection: Axis.vertical,
                                 child: Table(
@@ -157,9 +159,8 @@ class _BooksState extends State<Books> {
                                                     MaterialPageRoute(
                                                       builder: (context) {
                                                         return Chapters(
-                                                          bookId:
-                                                              selectedBookId,
-                                                        );
+                                                            bookId:
+                                                                selectedBookId);
                                                       },
                                                     ),
                                                   );

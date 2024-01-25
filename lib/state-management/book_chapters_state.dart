@@ -16,6 +16,7 @@ class BookState extends ChangeNotifier {
   String shareableLink = '';
   List<dynamic> texts = [];
   Map<String, dynamic> addedbookmark = {};
+  
 
   Map<String, dynamic> data = {
     "deviceId": "",
@@ -89,6 +90,16 @@ class BookState extends ChangeNotifier {
     notifyListeners();
   }
 
+   void clearSelectedCellIndices() {
+    _selectedCellIndices.clear();
+    notifyListeners();
+  }
+ void stopPlaying() async {
+    await audioPlayer.stop();
+    _isPlaying = false;
+    notifyListeners();
+  }
+
   int? _selectedBookIndex;
 
   int? get selectedBookIndex => _selectedBookIndex;
@@ -121,10 +132,7 @@ class BookState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearChapters() {
-    chapter.clear();
-    notifyListeners();
-  }
+
 
   String? getSelectedBookTitle() {
     // Assuming you have a property named 'selectedBookId' in your class

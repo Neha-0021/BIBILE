@@ -24,7 +24,7 @@ class _ChapterState extends State<Chapter> {
 
     Future.microtask(() {
       final bookState = Provider.of<BookState>(context, listen: false);
-      bookState.clearChapters();
+
       String bookId = bookState.books.first["_id"];
       bookState.getChapterBybookId(bookId);
       bookState.setSelectedBookId(bookId);
@@ -99,8 +99,11 @@ class _ChapterState extends State<Chapter> {
                         vertical: 30, horizontal: 15),
                     child: isLoading
                         ? const Center(
-                            child:
-                                CircularProgressIndicator(), // Loading indicator
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.red,
+                              ),
+                            ),
                           )
                         : chapterTitles.isEmpty
                             ? Center(
@@ -219,6 +222,7 @@ class _ChapterState extends State<Chapter> {
                               ),
                   ),
                 ),
+                
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 30),
                   child: Align(

@@ -38,14 +38,11 @@ class MyAppComponent extends State<MyApp> {
     NotificationHandler().getFcmToken();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (content) => BookState()),
-        ChangeNotifierProvider(create: (content) =>  AudioPlayerService ()),
         ],
         child: MaterialApp(
           title: 'BIBLE APP',
@@ -54,10 +51,9 @@ class MyAppComponent extends State<MyApp> {
             'Home': (context) => const MyHomePage(),
             'Book': (context) => const BookMarkPage(),
             'Menu': (context) => const SideMenu(),
-            'bottom': (context) =>  const BottomBar(),
-            'splash':(context)=>const SplashScreen(),
+            'bottom': (context) => const BottomBar(),
+            'splash': (context) => const SplashScreen(),
           },
-           
         ));
   }
 }

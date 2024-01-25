@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:toast/toast.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -71,8 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-  
-
     return Consumer<BookState>(
       builder: (context, bookState, child) => DefaultTabController(
         length: 2,
@@ -103,7 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     labels: const ['Old', 'New'],
                     radiusStyle: true,
                     onToggle: (index) async {
-                     
                       setState(() {
                         _toggleIndex = index!;
                       });
@@ -118,19 +116,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: bookState.getSelectedCellIndex(
-                              bookState.selectedBookId) !=
+                  onPressed: bookState
+                              .getSelectedCellIndex(bookState.selectedBookId) !=
                           -1
                       ? () async {
                           String chapterId = bookState.chapter[
                               bookState.getSelectedCellIndex(
                                   bookState.selectedBookId)]["_id"];
                           String deviceId = _deviceId;
-                         
-                          bookState.addBookmark(
-                              chapterId, deviceId, context);
+
+                          bookState.addBookmark(chapterId, deviceId, context);
                         }
-                      : null, // Set onPressed to null when no cell text is selected
+                      : () => showToast(
+                          "No audio is playing, please play any chapter first"),
                   icon: Icon(
                     bookState.isBookMarked
                         ? Icons.bookmark
@@ -193,5 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  void showToast(String msg, {int? duration, int? gravity}) {
+    Toast.show(msg, duration: duration, gravity: gravity);
   }
 }
