@@ -1,21 +1,20 @@
+import 'package:bible_app/state-management/AudioPlayers.dart';
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class BookMarkCard extends StatefulWidget {
+class BookMarkCard extends StatelessWidget {
   final Map<String, dynamic> data;
 
   const BookMarkCard({Key? key, required this.data}) : super(key: key);
 
   @override
-  _BookMarkCardState createState() => _BookMarkCardState();
-}
-
-class _BookMarkCardState extends State<BookMarkCard> {
-  @override
   Widget build(BuildContext context) {
-    final chapterState = Provider.of<BookState>(context);
+    final audioState = Provider.of<AudioState>(context, listen: true);
+
+    bool isCurrentBookmarkPlaying = audioState.audioPlayer.playing &&
+        audioState.currentPlayingId == data["_id"];
 
     return Card(
       child: Padding(
@@ -42,7 +41,7 @@ class _BookMarkCardState extends State<BookMarkCard> {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    "${widget.data["bookDetails"]["title"]} - ${widget.data["chapterDetails"]["chapterNumber"]}",
+                    "${data["bookDetails"]["title"]} - ${data["chapterDetails"]["chapterNumber"]}",
                     style: GoogleFonts.lato(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -54,24 +53,27 @@ class _BookMarkCardState extends State<BookMarkCard> {
                   radius: 25,
                   backgroundColor: Colors.red[700],
                   child: IconButton(
-                    icon: Icon(
-                      chapterState.isPlaying &&
-                              chapterState.selectedBookId == widget.data["_id"]
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      size: 35,
-                    ),
+                    icon: Icon((isCurrentBookmarkPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow)),
                     color: Colors.white,
                     onPressed: () async {
-                      String bookmarkId = widget.data["_id"];
-                      String audioUrl =
-                          widget.data["chapterDetails"]["audioUrl"];
+                      final bookState =
+                          Provider.of<BookState>(context, listen: false);
 
-                      if (chapterState.isPlaying &&
-                          chapterState.selectedBookId == bookmarkId) {
-                        chapterState.stopPlaying();
+                      // Clear selected cell indices before playing the bookmark
+                      bookState.clearSelectedCellIndices();
+
+                      if (audioState.audioPlayer.playing &&
+                          audioState.currentPlayingId == data["_id"]) {
+                        audioState.stop();
                       } else {
-                        chapterState.play(audioUrl, bookmarkId);
+                        String bookmarkId = data["_id"];
+                        String audioUrl = data["chapterDetails"]["audioUrl"];
+
+                        bookState.setSelectedBookId("");
+
+                        audioState.playBookMark(audioUrl, bookmarkId);
                       }
                     },
                   ),
@@ -84,8 +86,11 @@ class _BookMarkCardState extends State<BookMarkCard> {
                       color: Colors.red,
                     ),
                     onPressed: () {
+                      if (isCurrentBookmarkPlaying) {
+                        audioState.stop();
+                      }
                       Provider.of<BookState>(context, listen: false)
-                          .removeBookmarkById(widget.data["_id"], context);
+                          .removeBookmarkById(data["_id"], context);
                     },
                   ),
                 ),

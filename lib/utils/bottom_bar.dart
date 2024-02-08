@@ -87,7 +87,7 @@ class BottomBarTab extends State<BottomBar> {
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.bookmark, size: 30, color: Colors.red[700]),
-        title: 'BookMark',
+        title: 'Bookmark',
         textStyle: GoogleFonts.lato(
           fontSize: 12,
           fontWeight: FontWeight.bold,

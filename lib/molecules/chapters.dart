@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bible_app/atom/music.dart';
+import 'package:bible_app/state-management/AudioPlayers.dart';
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -21,8 +23,10 @@ class Chapters extends StatefulWidget {
   _ChaptersState createState() => _ChaptersState();
 }
 
-class _ChaptersState extends State<Chapters> {
+class _ChaptersState extends State<Chapters>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   String _deviceId = 'Unknown';
+  late Ticker ticker;
   bool isLoading = true;
 
   @override
@@ -33,12 +37,24 @@ class _ChaptersState extends State<Chapters> {
         await checkSelectedBook();
       }
       await initPlatformState();
+      ticker = createTicker((elapsed) {
+        // Update your UI here
+        setState(() {});
+      })
+        ..start();
       if (mounted) {
         setState(() {
           isLoading = false;
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    ticker.dispose();
+
+    super.dispose();
   }
 
   Future<void> checkSelectedBook() async {
@@ -78,14 +94,11 @@ class _ChaptersState extends State<Chapters> {
 
   @override
   Widget build(BuildContext context) {
-    final chapterState = Provider.of<BookState>(context);
+    final chapterState = Provider.of<BookState>(context, listen: false);
+    final audioState = Provider.of<AudioState>(context, listen: false);
 
     List<String> chapterTitles = chapterState.chapter
         .map((chapter) => (chapter['chapterNumber']).toString())
-        .toList();
-
-    List<String> chapterTitle = chapterState.chapter
-        .map((chapter) => (chapter['title'] ?? '').toString())
         .toList();
 
     List<dynamic> audioUrls =
@@ -99,7 +112,8 @@ class _ChaptersState extends State<Chapters> {
     int rows = (chapterTitles.length / columns).ceil();
 
     String selectedBookTitle = chapterState.getSelectedBookTitle() ?? "";
-    return DefaultTabController(
+   return Consumer<BookState>(
+      builder: (context, chapterState, child) =>  DefaultTabController(
         length: 1,
         child: Scaffold(
             appBar: AppBar(
@@ -131,7 +145,7 @@ class _ChaptersState extends State<Chapters> {
                                       chapterState.getSelectedCellIndex(
                                           chapterState.selectedBookId)]["_id"];
                                   String deviceId = _deviceId;
-print("$deviceId");
+                                  print("$deviceId");
                                   chapterState.addBookmark(
                                       chapterId, deviceId, context);
                                 }
@@ -204,17 +218,15 @@ print("$deviceId");
                                             int index =
                                                 rowIndex * columns + colIndex;
                                             if (index < chapterTitles.length) {
-                                              String cellText = (colIndex ==
-                                                          0 &&
-                                                      rowIndex == 0)
-                                                  ? (index < chapterTitle.length
-                                                      ? chapterTitle[index]
-                                                      : "")
-                                                  : (index <
-                                                          chapterTitles.length
-                                                      ? chapterTitles[index]
-                                                      : "");
-
+                                              String cellText = (index <
+                                                      chapterTitles.length)
+                                                  ? (chapterState.chapter[index]
+                                                              [
+                                                              "chapterNumber"] ==
+                                                          0
+                                                      ? "Introduction"
+                                                      : chapterTitles[index])
+                                                  : "";
                                               return GestureDetector(
                                                 onTap: () async {
                                                   chapterState
@@ -222,8 +234,26 @@ print("$deviceId");
                                                     chapterState.selectedBookId,
                                                     index,
                                                   );
-                                                  String audioUrl =
-                                                      audioUrls[index];
+                                                  List<dynamic> chapters =
+                                                      chapterState.chapter;
+                                                  await audioState.audioPlayer
+                                                      .stop();
+                                                  await audioState.playChapter(
+                                                      chapters,
+                                                      index,
+                                                      selectedBookTitle);
+                                                  audioState.audioPlayer
+                                                      .currentIndexStream
+                                                      .listen((index) {
+                                                    if (index != null) {
+                                                      chapterState
+                                                          .setSelectedCellIndices(
+                                                        chapterState
+                                                            .selectedBookId,
+                                                        index,
+                                                      );
+                                                    }
+                                                  });
                                                   String chapterId =
                                                       chapterState
                                                               .chapter[index]
@@ -236,10 +266,6 @@ print("$deviceId");
                                                   chapterState
                                                       .getBookMarkbychapterIddeviceId(
                                                           chapterId, deviceId);
-                                                  chapterState.play(
-                                                      audioUrl,
-                                                      chapterState
-                                                          .selectedBookId);
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(
@@ -313,7 +339,7 @@ print("$deviceId");
                         child: MusicPlayer(),
                       ))
                 ],
-              ),
+              ),)
             )));
   }
 

@@ -1,4 +1,5 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'dart:async';
+
 import 'package:bible_app/services/books_chapters.dart';
 import 'package:bible_app/utils/alert.dart';
 import 'package:flutter/foundation.dart';
@@ -16,47 +17,17 @@ class BookState extends ChangeNotifier {
   String shareableLink = '';
   List<dynamic> texts = [];
   Map<String, dynamic> addedbookmark = {};
-  
 
   Map<String, dynamic> data = {
     "deviceId": "",
     "fcmToken": "",
   };
-  final AudioPlayer audioPlayer = AudioPlayer();
 
-  bool _isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
-
-  bool _isLoading = false;
   bool isBookmarked = false;
 
-  bool get isLoading => _isLoading;
 
-  void setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
-  }
 
-  bool get isPlaying => _isPlaying;
 
-  void play(String audioUrl, String bookId) async {
-    if (_selectedBookId != bookId) {
-      // Pause audio if playing in a different book
-      await audioPlayer.pause();
-      _isPlaying = false;
-    }
-
-    _isLoading = true;
-
-    await audioPlayer.stop();
-    await audioPlayer.play(UrlSource(audioUrl));
-    _isLoading = false;
-
-    _selectedBookId = bookId;
-    setSelectedCellIndices(bookId, getSelectedCellIndex(bookId));
-    notifyListeners();
-  }
 
   String _selectedBookId = ''; // Add this line to store the selected book ID
 
@@ -90,13 +61,8 @@ class BookState extends ChangeNotifier {
     notifyListeners();
   }
 
-   void clearSelectedCellIndices() {
+  void clearSelectedCellIndices() {
     _selectedCellIndices.clear();
-    notifyListeners();
-  }
- void stopPlaying() async {
-    await audioPlayer.stop();
-    _isPlaying = false;
     notifyListeners();
   }
 
@@ -113,27 +79,6 @@ class BookState extends ChangeNotifier {
     return _selectedBookIndex ?? -1;
   }
 
-  Duration get duration => _duration;
-
-  Duration get position => _position;
-
-  void setDuration(Duration duration) {
-    _duration = duration;
-    notifyListeners();
-  }
-
-  void setPosition(Duration position) {
-    _position = position;
-    notifyListeners();
-  }
-
-  void playing(bool value) {
-    _isPlaying = value;
-    notifyListeners();
-  }
-
-
-
   String? getSelectedBookTitle() {
     // Assuming you have a property named 'selectedBookId' in your class
     String? selectedBookId = this.selectedBookId;
@@ -144,10 +89,6 @@ class BookState extends ChangeNotifier {
 
     // Return the title if the book is found, otherwise return null or a default value
     return selectedBook != null ? selectedBook['title'] : null;
-  }
-
-  void setIsPlaying(PlayerState state) {
-    _isPlaying = state == PlayerState.playing;
   }
 
   String _selectedBookType =
@@ -162,17 +103,6 @@ class BookState extends ChangeNotifier {
 
   String getSelectedBookType() {
     return _selectedBookType;
-  }
-
-  String formatTime(Duration duration) {
-    String twoDigits(int n) {
-      if (n >= 10) return "$n";
-      return "0$n";
-    }
-
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   Future<void> getAllBook() async {
@@ -307,7 +237,6 @@ class BookState extends ChangeNotifier {
         }
       }
 
-     
       notifyListeners();
     } catch (error) {
       if (kDebugMode) {
@@ -343,7 +272,7 @@ class BookState extends ChangeNotifier {
         print('share app link: $responseData');
       }
       shareableLink = responseData["shareableLink"];
-    
+
       notifyListeners();
     } catch (error) {
       if (kDebugMode) {

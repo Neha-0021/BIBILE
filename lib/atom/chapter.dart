@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bible_app/atom/music.dart';
+import 'package:bible_app/state-management/AudioPlayers.dart';
+
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,7 @@ class _ChapterState extends State<Chapter> {
   void initState() {
     super.initState();
 
-    Future.microtask(() {
+    Future.microtask(() async {
       final bookState = Provider.of<BookState>(context, listen: false);
 
       String bookId = bookState.books.first["_id"];
@@ -36,8 +38,9 @@ class _ChapterState extends State<Chapter> {
       setState(() {
         isLoading = false;
       });
+
+      await initPlatformState(); // Move this line inside the microtask
     });
-    initPlatformState();
   }
 
   Future<void> initPlatformState() async {
@@ -64,7 +67,8 @@ class _ChapterState extends State<Chapter> {
 
   @override
   Widget build(BuildContext context) {
-    final chapterState = Provider.of<BookState>(context);
+    final chapterState = Provider.of<BookState>(context, listen: false);
+    final audioState = Provider.of<AudioState>(context, listen: false);
 
     List<String> chapterTitles = chapterState.chapter
         .map((chapter) => (chapter['chapterNumber']).toString())
@@ -81,6 +85,7 @@ class _ChapterState extends State<Chapter> {
     int columns = initialColumns > 0 ? initialColumns : 1;
 
     int rows = (chapterTitles.length / columns).ceil();
+    String selectedBookTitle = chapterState.getSelectedBookTitle() ?? "";
 
     return Consumer<BookState>(
       builder: (context, chapterState, child) => DefaultTabController(
@@ -150,14 +155,14 @@ class _ChapterState extends State<Chapter> {
                                           int index =
                                               rowIndex * columns + colIndex;
                                           if (index < chapterTitles.length) {
-                                            String cellText = (colIndex == 0 &&
-                                                    rowIndex == 0)
-                                                ? (index < chapterTitle.length
-                                                    ? chapterTitle[index]
-                                                    : "")
-                                                : (index < chapterTitles.length
-                                                    ? chapterTitles[index]
-                                                    : "");
+                                            String cellText = (index <
+                                                    chapterTitles.length)
+                                                ? (chapterState.chapter[index]
+                                                            ["chapterNumber"] ==
+                                                        0
+                                                    ? "Introduction"
+                                                    : chapterTitles[index])
+                                                : "";
 
                                             return GestureDetector(
                                               onTap: () async {
@@ -170,15 +175,19 @@ class _ChapterState extends State<Chapter> {
                                                     audioUrls[index];
                                                 String chapterId = chapterState
                                                     .chapter[index]["_id"];
-
+                                                if (audioState
+                                                    .audioPlayer.playing) {
+                                                  audioState.audioPlayer.stop();
+                                                }
+                                                await audioState.playChapter(
+                                                  chapterState.chapter,
+                                                  index,
+                                                  selectedBookTitle,
+                                                );
                                                 String deviceId = _deviceId;
                                                 chapterState
                                                     .getBookMarkbychapterIddeviceId(
                                                         chapterId, deviceId);
-                                                chapterState.play(
-                                                    audioUrl,
-                                                    chapterState
-                                                        .selectedBookId);
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -222,7 +231,6 @@ class _ChapterState extends State<Chapter> {
                               ),
                   ),
                 ),
-                
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 30),
                   child: Align(

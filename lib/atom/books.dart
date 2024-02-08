@@ -113,8 +113,8 @@ class _BooksState extends State<Books> {
                                               horizontal: 20, vertical: 40),
                                           child: Text(
                                             widget.selectedType == 'new'
-                                                ? 'New Testament audio version is under development.It will be available soon.'
-                                                : 'Old Testament audio version is under development.It will be available soon.',
+                                                ? 'New Testament audio version is under development. It will be available soon.'
+                                                : 'Old Testament audio version is under development. It will be available soon.',
                                             style: GoogleFonts.lato(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
