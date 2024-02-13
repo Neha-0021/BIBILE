@@ -47,12 +47,10 @@ dependencies:
   dio: ^5.3.4
   provider: ^6.1.1
   toggle_switch: ^2.1.0
-  mac_address: ^1.0.0
   share_plus: ^7.2.1
   device_info: ^2.0.3
   firebase_messaging: ^14.7.6
   flutter_local_notifications: ^16.2.0
-  audio_service: ^0.18.12
   just_audio_background: ^0.0.1-beta.11
   data_table_2: ^2.5.9
   flutter_html: ^3.0.0-beta.2

@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "2.11.0"
   audio_service:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: audio_service
       sha256: a4d989f1225ea9621898d60f23236dcbfc04876fa316086c23c5c4af075dbac4
@@ -488,14 +488,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  mac_address:
-    dependency: "direct main"
-    description:
-      name: mac_address
-      sha256: "630aca295b6c525c1f79d38c8669a65aa06a3e9ff870f73780a8d9694ba789ff"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   matcher:
     dependency: transitive
     description:
