@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:bible_app/atom/music.dart';
 import 'package:bible_app/state-management/AudioPlayers.dart';
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -53,7 +50,8 @@ class _ChaptersState extends State<Chapters>
     String selectedBookId = widget.bookId ?? defaultBookId;
     bookState.setSelectedBookId(selectedBookId);
 
-    bookState.setSelectedCellIndices(selectedBookId, -1);
+    bookState.setSelectedCellIndices(
+        selectedBookId, bookState.getSelectedCellIndex(selectedBookId));
 
     await bookState.getChapterBybookId(selectedBookId);
   }
