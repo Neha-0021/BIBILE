@@ -64,9 +64,9 @@ class _ChaptersState extends State<Chapters>
         bookState.books.isNotEmpty ? bookState.books.first["_id"] : "";
     String selectedBookId = widget.bookId ?? defaultBookId;
     bookState.setSelectedBookId(selectedBookId);
-    bookState.getSelectedCellIndex(selectedBookId);
     bookState.setSelectedCellIndices(
         selectedBookId, bookState.getSelectedCellIndex(selectedBookId));
+
     await bookState.getChapterBybookId(selectedBookId);
   }
 
