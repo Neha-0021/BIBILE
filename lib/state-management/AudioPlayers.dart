@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -42,7 +43,7 @@ class AudioState extends ChangeNotifier {
 
     audioPlayer.play();
     currentPlayingId =
-        chapters[index]['_id'] ?? ""; 
+        chapters[index]['_id'] ?? ""; // Set the current playing ID
 
     notifyListeners();
   }
