@@ -53,7 +53,6 @@ class _ChaptersState extends State<Chapters>
     String selectedBookId = widget.bookId ?? defaultBookId;
     bookState.setSelectedBookId(selectedBookId);
 
-    // Reset the selected cell index here
     bookState.setSelectedCellIndices(selectedBookId, -1);
 
     await bookState.getChapterBybookId(selectedBookId);
@@ -206,9 +205,16 @@ class _ChaptersState extends State<Chapters>
                                         (colIndex) {
                                           int index =
                                               rowIndex * columns + colIndex;
+
                                           if (index < chapterTitles.length) {
-                                            String cellText =
-                                                chapterTitles[index];
+                                            String cellText = (index <
+                                                    chapterTitles.length)
+                                                ? (chapterState.chapter[index]
+                                                            ["chapterNumber"] ==
+                                                        0
+                                                    ? "Introduction"
+                                                    : chapterTitles[index])
+                                                : "";
                                             return GestureDetector(
                                               onTap: () async {
                                                 chapterState
