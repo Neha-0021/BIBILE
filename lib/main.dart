@@ -1,10 +1,10 @@
+import 'dart:async';
 
 import 'package:bible_app/molecules/menu_bar.dart';
 import 'package:bible_app/pages/book_mark.dart';
 import 'package:bible_app/pages/home_page.dart';
 import 'package:bible_app/pages/splash.dart';
 import 'package:bible_app/state-management/AudioPlayers.dart';
-
 
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'NCB Audio Bible',
+    androidNotificationChannelName: 'Audio NCB',
     androidNotificationOngoing: true,
     androidNotificationIcon: 'mipmap/ic_launcher',
     androidNotificationClickStartsActivity: false,

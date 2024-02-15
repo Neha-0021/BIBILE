@@ -50,6 +50,7 @@ class NotificationHandler {
 
     // Get the FCM token
     String? token = await FirebaseMessaging.instance.getToken();
+    print(token);
     if (token != null) {
       // print('FCM Token: $token');
       return token;
