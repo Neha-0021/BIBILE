@@ -10,6 +10,7 @@ import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:bible_app/utils/bottom_bar.dart';
 import 'package:bible_app/utils/notification_handler.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ void main() async {
     },
   );
   await Firebase.initializeApp();
+  NotificationHandler();
   NotificationHandler().getFcmToken();
   runApp(const MyApp());
 }
