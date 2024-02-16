@@ -82,21 +82,21 @@ class _MusicPlayerState extends State<MusicPlayer>
       audioState.audioPlayer.stop();
       int currentIndex =
           chapterState.getChapterIndexById(chapterState.selectedChapterId!);
-      if (currentIndex > 0) {
-        chapterState.setSelectedChapterId(
-            chapterState.chapter[currentIndex - 1]["_id"]);
-      } else {
-        chapterState.setSelectedChapterId(
-            chapterState.chapter[chapterTitles.length - 1]["_id"]);
+      int previousIndex = currentIndex - 1;
+      if (previousIndex < 0) {
+        // If the current chapter is the first one, set the previous index to the last chapter
+        previousIndex = chapterState.chapter.length - 1;
       }
+      chapterState
+          .setSelectedChapterId(chapterState.chapter[previousIndex]["_id"]);
 
       // Additional parameters for the previous chapter
-      String chapterId = chapterState.chapter[currentIndex]["_id"];
+      String chapterId = chapterState.chapter[previousIndex]["_id"];
       String bookName = chapterState.getSelectedBookTitle() ?? "";
 
       await audioState.playChapter(
         chapterState.chapter,
-        currentIndex, // Use currentIndex instead of getSelectedCellIndex
+        previousIndex,
         bookName,
       );
 
