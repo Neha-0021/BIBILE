@@ -116,30 +116,29 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                   padding: const EdgeInsets.all(0),
-                  onPressed: bookState
-                              .getSelectedCellIndex(bookState.selectedBookId) !=
-                          -1
-                      ? () async {
-                          String chapterId = bookState.chapter[
-                              bookState.getSelectedCellIndex(
-                                  bookState.selectedBookId)]["_id"];
-                          String deviceId = _deviceId;
+                  onPressed: () async {
+                    // Check if a chapter is selected
+                    if (bookState.selectedChapterId != null) {
+                      String chapterId = bookState.selectedChapterId!;
+                      String deviceId = _deviceId;
 
-                          bookState.addBookmark(chapterId, deviceId, context);
-                        }
-                      : () => showToast(
-                          "No audio is playing, please play any chapter first"),
+                      // Add bookmark
+                      bookState.addBookmark(chapterId, deviceId, context);
+                    } else {
+                      showToast(
+                        "No audio is playing, please play any chapter first",
+                      );
+                    }
+                  },
                   icon: Icon(
                     bookState.isBookMarked
                         ? Icons.bookmark
                         : Icons.bookmark_outline,
                     size: 30.0,
-                    color: bookState.getSelectedCellIndex(
-                                bookState.selectedBookId) !=
-                            -1
-                        ? Colors.amber[600] // Enabled color
+                    color: bookState.selectedChapterId != null
+                        ? Colors.amber[600] // Selected color
                         : Colors.amber[600]?.withOpacity(
-                            0.5), // Disabled color with reduced opacity
+                            0.5), // Default color with reduced opacity
                   ),
                 ),
                 IconButton(

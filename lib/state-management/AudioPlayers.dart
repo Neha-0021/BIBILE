@@ -48,12 +48,21 @@ class AudioState extends ChangeNotifier {
     notifyListeners();
   }
 
+   String? _currentChapterId;
+  String? get currentChapterId => _currentChapterId;
+
+  // Method to update the currently playing chapter ID
+  void updateCurrentChapterId(String chapterId) {
+    _currentChapterId = chapterId;
+    notifyListeners();
+  }
+
   Future<void> playBookMark(
     String audioUrl,
     String chapterID,
   ) async {
     stop();
-    bookState.clearSelectedCellIndices();
+   
     isLoading = true;
     notifyListeners();
 

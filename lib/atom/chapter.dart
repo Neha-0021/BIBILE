@@ -5,6 +5,7 @@ import 'package:bible_app/state-management/AudioPlayers.dart';
 
 import 'package:bible_app/state-management/book_chapters_state.dart';
 import 'package:device_info/device_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class _ChapterState extends State<Chapter> {
       bookState.getChapterBybookId(bookId);
       bookState.setSelectedBookId(bookId);
 
-      bookState.getSelectedCellIndex(bookId);
+ 
 
       bookState.getChapterBybookId(bookId);
 
@@ -110,125 +111,153 @@ class _ChapterState extends State<Chapter> {
                               ),
                             ),
                           )
-                        : chapterTitles.isEmpty
-                            ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 40),
-                                      child: Text(
-                                        'No chapter available for this book',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                       : chapterTitles.isNotEmpty
+                                  ? SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: Table(
+                                        columnWidths: {
+                                          for (var index in List.generate(
+                                              columns, (index) => index))
+                                            index: const FlexColumnWidth(1.0),
+                                        },
+                                        defaultVerticalAlignment:
+                                            TableCellVerticalAlignment.middle,
+                                        border: TableBorder.all(
+                                          color: const Color(0xFFf5f5f5),
+                                          width: 3.0,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Table(
-                                  columnWidths: {
-                                    for (var index in List.generate(
-                                        columns, (index) => index))
-                                      index: const FlexColumnWidth(1.0),
-                                  },
-                                  defaultVerticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  border: TableBorder.all(
-                                    color: const Color(0xFFf5f5f5),
-                                    width: 3.0,
-                                  ),
-                                  children: List.generate(rows, (rowIndex) {
-                                    return TableRow(
-                                      children: List.generate(
-                                        columns,
-                                        (colIndex) {
-                                          int index =
-                                              rowIndex * columns + colIndex;
-                                          if (index < chapterTitles.length) {
-                                            String cellText = (index <
-                                                    chapterTitles.length)
-                                                ? (chapterState.chapter[index]
-                                                            ["chapterNumber"] ==
-                                                        0
-                                                    ? "Introduction"
-                                                    : chapterTitles[index])
-                                                : "";
-
-                                            return GestureDetector(
-                                              onTap: () async {
-                                                chapterState
-                                                    .setSelectedCellIndices(
-                                                  chapterState.selectedBookId,
-                                                  index,
-                                                );
-                                                String audioUrl =
-                                                    audioUrls[index];
-                                                String chapterId = chapterState
-                                                    .chapter[index]["_id"];
-                                                if (audioState
-                                                    .audioPlayer.playing) {
-                                                  audioState.audioPlayer.stop();
-                                                }
-                                                await audioState.playChapter(
-                                                  chapterState.chapter,
-                                                  index,
-                                                  selectedBookTitle,
-                                                );
-                                                String deviceId = _deviceId;
-                                                chapterState
-                                                    .getBookMarkbychapterIddeviceId(
-                                                        chapterId, deviceId);
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  border: Border.all(
-                                                    color: index ==
+                                        children:
+                                            List.generate(rows, (rowIndex) {
+                                          return TableRow(
+                                            children: List.generate(
+                                              columns,
+                                              (colIndex) {
+                                                int index = rowIndex * columns +
+                                                    colIndex;
+                                                if (index <
+                                                    chapterTitles.length) {
+                                                  String cellText = (index <
+                                                          chapterTitles.length)
+                                                      ? (chapterState.chapter[
+                                                                      index][
+                                                                  "chapterNumber"] ==
+                                                              0
+                                                          ? "Introduction"
+                                                          : chapterTitles[
+                                                              index])
+                                                      : "";
+                                                  return GestureDetector(
+                                                    onTap: () async {
+                                                      chapterState
+                                                          .setSelectedChapterId(
+                                                        chapterState
+                                                                .chapter[index]
+                                                            ["_id"],
+                                                      );
+                                                      List<dynamic> chapters =
+                                                          chapterState.chapter;
+                                                      await audioState
+                                                          .audioPlayer
+                                                          .stop();
+                                                      await audioState
+                                                          .playChapter(
+                                                              chapters,
+                                                              index,
+                                                              selectedBookTitle);
+                                                      audioState.audioPlayer
+                                                          .currentIndexStream
+                                                          .listen((index) {
+                                                        if (index != null) {
+                                                          chapterState
+                                                              .setSelectedChapterId(
                                                             chapterState
-                                                                .getSelectedCellIndex(
-                                                                    chapterState
-                                                                        .selectedBookId)
-                                                        ? Colors.red
-                                                        : Colors.transparent,
-                                                    width: 4.0,
-                                                  ),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(vertical: 20),
-                                                  child: Center(
-                                                    child: Text(
-                                                      cellText,
-                                                      style: GoogleFonts.lato(
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black,
+                                                                    .chapter[
+                                                                index]["_id"],
+                                                          );
+                                                        }
+                                                      });
+                                                      String chapterId =
+                                                          chapterState.chapter[
+                                                              index]["_id"];
+
+                                                      String deviceId =
+                                                          _deviceId;
+                                                      if (kDebugMode) {
+                                                        print(deviceId);
+                                                      }
+                                                      chapterState
+                                                          .getBookMarkbychapterIddeviceId(
+                                                              chapterId,
+                                                              deviceId);
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        border: Border.all(
+                                                          color: chapterState
+                                                                      .selectedChapterId ==
+                                                                  chapterState.chapter[
+                                                                          index]
+                                                                      ["_id"]
+                                                              ? Colors.red
+                                                              : Colors
+                                                                  .transparent,
+                                                          width: 4.0,
+                                                        ),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 20),
+                                                        child: Center(
+                                                          child: Text(
+                                                            cellText,
+                                                            style: GoogleFonts
+                                                                .lato(
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            return Container();
-                                          }
-                                        },
+                                                  );
+                                                } else {
+                                                  return Container();
+                                                }
+                                              },
+                                            ),
+                                          );
+                                        }),
                                       ),
-                                    );
-                                  }),
-                                ),
-                              ),
+                                    )
+                                  : Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 40),
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 40),
+                                            child: Text(
+                                              'No chapter available for this book',
+                                              style: GoogleFonts.lato(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                   ),
                 ),
                 const Padding(

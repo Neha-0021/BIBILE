@@ -25,16 +25,32 @@ class BookState extends ChangeNotifier {
 
   bool isBookmarked = false;
 
-
-
-
-
-  String _selectedBookId = ''; // Add this line to store the selected book ID
-
+  String _selectedBookId = ''; // Store the selected book ID
   String get selectedBookId => _selectedBookId;
-
   void setSelectedBookId(String bookId) {
     _selectedBookId = bookId;
+    notifyListeners();
+  }
+
+  String? _selectedChapterId;
+  String? get selectedChapterId => _selectedChapterId;
+  void setSelectedChapterId(String? chapterId) {
+    _selectedChapterId = chapterId;
+    notifyListeners();
+  }
+
+  int getChapterIndexById(String chapterId) {
+    for (int i = 0; i < chapter.length; i++) {
+      if (chapter[i]["_id"] == chapterId) {
+        return i;
+      }
+    }
+    // Return -1 if the chapter ID is not found
+    return -1;
+  }
+
+  void clearSelectedChapterId() {
+    _selectedChapterId = null;
     notifyListeners();
   }
 
@@ -47,38 +63,6 @@ class BookState extends ChangeNotifier {
 
   bool _isBookMarked = false;
 
-  final Map<String, int> _selectedCellIndices = {};
-
-  int getSelectedCellIndex(String bookId) {
-    return _selectedCellIndices.containsKey(bookId)
-        ? _selectedCellIndices[bookId]!
-        : -1;
-  }
-
-  void setSelectedCellIndices(String bookId, int index) {
-    _selectedCellIndices.clear();
-    _selectedCellIndices[bookId] = index;
-    notifyListeners();
-  }
-
-  void clearSelectedCellIndices() {
-    _selectedCellIndices.clear();
-    notifyListeners();
-  }
-
-  int? _selectedBookIndex;
-
-  int? get selectedBookIndex => _selectedBookIndex;
-
-  void setSelectedBookIndex(int index) {
-    _selectedBookIndex = index;
-    notifyListeners();
-  }
-
-  int getSelectedBookIndex() {
-    return _selectedBookIndex ?? -1;
-  }
-
   String? getSelectedBookTitle() {
     // Assuming you have a property named 'selectedBookId' in your class
     String? selectedBookId = this.selectedBookId;
@@ -89,20 +73,6 @@ class BookState extends ChangeNotifier {
 
     // Return the title if the book is found, otherwise return null or a default value
     return selectedBook != null ? selectedBook['title'] : null;
-  }
-
-  String _selectedBookType =
-      ''; // Add this line to store the selected book type
-
-  String get selectedBookType => _selectedBookType;
-
-  void setSelectedBookType(String type) {
-    _selectedBookType = type;
-    notifyListeners();
-  }
-
-  String getSelectedBookType() {
-    return _selectedBookType;
   }
 
   Future<void> getAllBook() async {

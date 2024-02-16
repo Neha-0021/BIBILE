@@ -29,7 +29,7 @@ class BottomBarTab extends State<BottomBar> {
     _scaffoldKey.currentState?.openDrawer();
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
     initializeAsyncLogic();
@@ -61,12 +61,9 @@ class BottomBarTab extends State<BottomBar> {
       deviceId;
     });
 
-   
-
     final bookState = Provider.of<BookState>(context, listen: false);
     bookState.getBookMarkbydeviceId(deviceId);
   }
-
 
   List<PersistentBottomNavBarItem> _navBarsItems(BuildContext context) {
     return [
@@ -112,11 +109,7 @@ class BottomBarTab extends State<BottomBar> {
   }
 
   List<Widget> _screens() {
-    return [
-      const MyHomePage(),
-      const BookMarkPage(),
-      const SideMenu()
-    ];
+    return [const MyHomePage(), const BookMarkPage(), const SideMenu()];
   }
 
   @override
@@ -138,7 +131,7 @@ class BottomBarTab extends State<BottomBar> {
             topRight: Radius.circular(20),
           ),
         ),
-        backgroundColor:const  Color(0xFFFFCDD2),
+        backgroundColor: const Color(0xFFFFCDD2),
         popAllScreensOnTapOfSelectedTab: true,
         popActionScreens: PopActionScreensType.all,
         navBarStyle: NavBarStyle.style6,

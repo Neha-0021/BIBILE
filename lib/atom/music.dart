@@ -76,27 +76,18 @@ class _MusicPlayerState extends State<MusicPlayer>
     List<String> chapterTitles = chapterState.chapter
         .map((chapter) => (chapter['chapterNumber']).toString())
         .toList();
-    List<dynamic> audioUrls =
-        chapterState.chapter.map((chapter) => chapter['audioUrl']).toList();
 
-    bool isCellTextSelected = chapterState.books.any(
-      (book) => chapterState.getSelectedCellIndex(book['_id']) != -1,
-    );
-
+    bool isCellTextSelected = chapterState.selectedChapterId != null;
     Future<void> playPreviousChapter() async {
       audioState.audioPlayer.stop();
       int currentIndex =
-          chapterState.getSelectedCellIndex(chapterState.selectedBookId);
+          chapterState.getChapterIndexById(chapterState.selectedChapterId!);
       if (currentIndex > 0) {
-        chapterState.setSelectedCellIndices(
-          chapterState.selectedBookId,
-          currentIndex - 1,
-        );
+        chapterState.setSelectedChapterId(
+            chapterState.chapter[currentIndex - 1]["_id"]);
       } else {
-        chapterState.setSelectedCellIndices(
-          chapterState.selectedBookId,
-          chapterTitles.length - 1,
-        );
+        chapterState.setSelectedChapterId(
+            chapterState.chapter[chapterTitles.length - 1]["_id"]);
       }
 
       // Additional parameters for the previous chapter
@@ -104,8 +95,8 @@ class _MusicPlayerState extends State<MusicPlayer>
       String bookName = chapterState.getSelectedBookTitle() ?? "";
 
       await audioState.playChapter(
-       chapterState.chapter,
-        chapterState.getSelectedCellIndex(chapterState.selectedBookId),
+        chapterState.chapter,
+        currentIndex, // Use currentIndex instead of getSelectedCellIndex
         bookName,
       );
 
@@ -117,29 +108,42 @@ class _MusicPlayerState extends State<MusicPlayer>
     Future<void> playNextChapter() async {
       audioState.audioPlayer.stop();
       int currentIndex =
-          chapterState.getSelectedCellIndex(chapterState.selectedBookId);
-      if (currentIndex < chapterTitles.length - 1) {
-        chapterState.setSelectedCellIndices(
-          chapterState.selectedBookId,
-          currentIndex + 1,
-        );
-      } else {
-        chapterState.setSelectedCellIndices(chapterState.selectedBookId, 0);
-      }
+          chapterState.getChapterIndexById(chapterState.selectedChapterId!);
+      int nextIndex = (currentIndex + 1) % chapterState.chapter.length;
+      chapterState.setSelectedChapterId(chapterState.chapter[nextIndex]["_id"]);
 
       // Additional parameters for the next chapter
-      String chapterId = chapterState.chapter[currentIndex]["_id"];
+      String chapterId = chapterState.chapter[nextIndex]["_id"];
       String bookName = chapterState.getSelectedBookTitle() ?? "";
 
       await audioState.playChapter(
-         chapterState.chapter,
-      chapterState.getSelectedCellIndex(chapterState.selectedBookId),
+        chapterState.chapter,
+        nextIndex, // Use nextIndex instead of getSelectedCellIndex
         bookName,
       );
 
       // Fetch chapterId and deviceId
       String deviceId = _deviceId;
       chapterState.getBookMarkbychapterIddeviceId(chapterId, deviceId);
+    }
+
+    String selectedChapterId = chapterState.selectedChapterId ?? "";
+    String bookTitle = "";
+
+    // Find the index of the selected chapter
+    int selectedIndex = chapterState.getChapterIndexById(selectedChapterId);
+
+    // Determine if a chapter is currently selected
+    bool isChapterSelected = selectedIndex != -1;
+
+    if (isChapterSelected) {
+      // Get the book ID of the selected chapter
+      String bookId = chapterState.chapter[selectedIndex]["bookId"];
+
+      // Get the title of the book using the book ID
+      bookTitle = chapterState.books.firstWhere((book) => book['_id'] == bookId,
+              orElse: () => {})['title'] ??
+          "";
     }
 
     return Column(
@@ -169,21 +173,18 @@ class _MusicPlayerState extends State<MusicPlayer>
                         decoration: TextDecoration.none,
                       ),
                     ),
-                    for (var book in chapterState.books)
-                      if (chapterState.getSelectedCellIndex(book['_id']) != -1)
-                        TextSpan(
-                          text: chapterState
-                                      .getSelectedCellIndex(book['_id']) ==
-                                  0
-                              ? '${book["title"]} ${"Introduction"}'
-                              : '${book["title"]} ${chapterTitles[chapterState.getSelectedCellIndex(book['_id'])]}',
-                          style: GoogleFonts.lato(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            decoration: TextDecoration.none,
-                          ),
+                    if (isChapterSelected)
+                      TextSpan(
+                        text: selectedIndex == 0
+                            ? '$bookTitle Introduction'
+                            : ' $bookTitle $selectedIndex',
+                        style: GoogleFonts.lato(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          decoration: TextDecoration.none,
                         ),
+                      ),
                   ],
                 ),
               ),
@@ -254,51 +255,49 @@ class _MusicPlayerState extends State<MusicPlayer>
               child: GestureDetector(
                 onTap: isCellTextSelected
                     ? () async {
-                        // Logic to play the last chapter of the previous book
                         String currentBookId = chapterState.selectedBookId;
+                        String currentChapterId =
+                            chapterState.selectedChapterId ?? "";
 
+                        // Get the index of the current book
                         int currentIndex = chapterState.books
                             .indexWhere((book) => book["_id"] == currentBookId);
 
+                        // Calculate the index of the previous book
                         int previousBookIndex =
                             (currentIndex - 1 + chapterState.books.length) %
                                 chapterState.books.length;
 
-                        chapterState.setSelectedBookIndex(previousBookIndex);
+                        // Get the ID of the previous book
                         String previousBookId =
                             chapterState.books[previousBookIndex]["_id"];
 
+                        // Set the selected book ID to the previous book ID
                         chapterState.setSelectedBookId(previousBookId);
 
+                        // Load chapters for the previous book
                         await chapterState.getChapterBybookId(previousBookId);
 
-                        if (chapterState.chapter.isNotEmpty) {
-                          int lastChapterIndex =
-                              chapterState.chapter.length - 1;
+                        // Get the last chapter index for the previous book
+                        int lastChapterIndex = chapterState.chapter.length - 1;
 
-                          // Set the selected cell indices to the last chapter of the previous book
-                          chapterState.setSelectedCellIndices(
-                              previousBookId, lastChapterIndex);
+                        // Set the selected chapter ID to the last chapter ID of the previous book
+                        chapterState.setSelectedChapterId(
+                            chapterState.chapter[lastChapterIndex]["_id"]);
 
-                          // Update the audio source with the chapters of the previous book
-                          await audioState.playChapter(
-                           chapterState.chapter,
-                             lastChapterIndex,
-                             chapterState.getSelectedBookTitle() ?? "",
-                          );
+                        // Play the last chapter of the previous book
+                        await audioState.playChapter(
+                          chapterState.chapter,
+                          lastChapterIndex,
+                          chapterState.getSelectedBookTitle() ?? "",
+                        );
 
-                          String chapterId =
-                              chapterState.chapter[lastChapterIndex]["_id"];
-                          String deviceId = _deviceId;
-
-                          // Call getBookmarkbychapterIddeviceId API
-                          chapterState.getBookMarkbychapterIddeviceId(
-                              chapterId, deviceId);
-                        } else {
-                          // If there are no chapters, clear selected cell indices and stop playback
-                          chapterState.clearSelectedCellIndices();
-                          audioState.stop();
-                        }
+                        // Get chapter ID and device ID for bookmark
+                        String chapterId =
+                            chapterState.chapter[lastChapterIndex]["_id"];
+                        String deviceId = _deviceId;
+                        chapterState.getBookMarkbychapterIddeviceId(
+                            chapterId, deviceId);
                       }
                     : () => showToast(
                         "No audio is playing, please play any chapter first"),
@@ -369,41 +368,50 @@ class _MusicPlayerState extends State<MusicPlayer>
             GestureDetector(
               onTap: isCellTextSelected
                   ? () async {
-                      // Logic to play the first chapter of the next book
                       String currentBookId = chapterState.selectedBookId;
+                      String currentChapterId =
+                          chapterState.selectedChapterId ?? "";
 
+                      // Get the index of the current book
                       int currentIndex = chapterState.books
                           .indexWhere((book) => book["_id"] == currentBookId);
 
+                      // Calculate the index of the next book
                       int nextBookIndex =
                           (currentIndex + 1) % chapterState.books.length;
 
-                      chapterState.setSelectedBookIndex(nextBookIndex);
+                      // Get the ID of the next book
                       String nextBookId =
                           chapterState.books[nextBookIndex]["_id"];
 
+                      // Set the selected book ID to the next book ID
                       chapterState.setSelectedBookId(nextBookId);
 
+                      // Load chapters for the next book
                       await chapterState.getChapterBybookId(nextBookId);
 
-                      if (chapterState.chapter.isNotEmpty) {
-                        chapterState.setSelectedCellIndices(nextBookId, 0);
+                      // Get the first chapter index for the next book
+                      int firstChapterIndex = 0;
 
+                      // Set the selected chapter ID to the first chapter ID of the next book
+                      if (chapterState.chapter.isNotEmpty) {
+                        chapterState.setSelectedChapterId(
+                            chapterState.chapter[firstChapterIndex]["_id"]);
+
+                        // Play the first chapter of the next book
                         await audioState.playChapter(
                           chapterState.chapter,
-                          0,
+                          firstChapterIndex,
                           chapterState.getSelectedBookTitle() ?? "",
                         );
 
-                        String chapterId = chapterState.chapter[0]["_id"];
+                        // Get chapter ID and device ID for bookmark
+                        String chapterId =
+                            chapterState.chapter[firstChapterIndex]["_id"];
                         String deviceId = _deviceId;
-
-                        // Call getBookmarkbychapterIddeviceId API
                         chapterState.getBookMarkbychapterIddeviceId(
                             chapterId, deviceId);
                       } else {
-                        // If there are no chapters, clear selected cell indices and stop playback
-                        chapterState.clearSelectedCellIndices();
                         audioState.stop();
                       }
                     }
