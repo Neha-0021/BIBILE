@@ -14,6 +14,7 @@ class NotificationHandler {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       // Handle incoming messages here
       // You can show in-app banners, update UI, etc.
+      print("message coming here");
       displayNotification(message.data);
     });
 
@@ -21,6 +22,8 @@ class NotificationHandler {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // Handle when the app is in the background and is opened from a notification tap
       // You can navigate to a specific screen based on the notification content.
+      print("message coming here");
+      displayNotification(message.data);
     });
   }
 
@@ -46,7 +49,12 @@ class NotificationHandler {
 
   Future<String> getFcmToken() async {
     // Request permission for notifications (if not already granted)
-    await FirebaseMessaging.instance.requestPermission();
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+      sound: true,
+    );
 
     // Get the FCM token
     String? token = await FirebaseMessaging.instance.getToken();
