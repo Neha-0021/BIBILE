@@ -61,9 +61,6 @@ class BookMarkCard extends StatelessWidget {
                       final bookState =
                           Provider.of<BookState>(context, listen: false);
 
-                      // Clear selected cell indices before playing the bookmark
-                      bookState.clearSelectedCellIndices();
-
                       if (audioState.audioPlayer.playing &&
                           audioState.currentPlayingId == data["_id"]) {
                         audioState.stop();

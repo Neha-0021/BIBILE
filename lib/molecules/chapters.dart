@@ -64,8 +64,6 @@ class _ChaptersState extends State<Chapters>
         bookState.books.isNotEmpty ? bookState.books.first["_id"] : "";
     String selectedBookId = widget.bookId ?? defaultBookId;
     bookState.setSelectedBookId(selectedBookId);
-    bookState.setSelectedCellIndices(
-        selectedBookId, bookState.getSelectedCellIndex(selectedBookId));
 
     await bookState.getChapterBybookId(selectedBookId);
   }
@@ -137,29 +135,27 @@ class _ChaptersState extends State<Chapters>
                           child: Row(children: [
                             IconButton(
                               padding: const EdgeInsets.all(0),
-                              onPressed: chapterState.getSelectedCellIndex(
-                                          chapterState.selectedBookId) !=
-                                      -1
+                              onPressed: chapterState.selectedChapterId != null
                                   ? () async {
-                                      String chapterId = chapterState.chapter[
-                                              chapterState.getSelectedCellIndex(
-                                                  chapterState.selectedBookId)]
-                                          ["_id"];
+                                      String chapterId =
+                                          chapterState.selectedChapterId!;
                                       String deviceId = _deviceId;
                                       print("$deviceId");
                                       chapterState.addBookmark(
-                                          chapterId, deviceId, context);
+                                        chapterId,
+                                        deviceId,
+                                        context,
+                                      );
                                     }
                                   : () => showToast(
-                                      "No audio is playing, please play any chapter first"), // Set onPressed to null when no cell text is selected
+                                        "No audio is playing, please play any chapter first",
+                                      ),
                               icon: Icon(
                                 chapterState.isBookMarked
                                     ? Icons.bookmark
                                     : Icons.bookmark_outline,
                                 size: 30.0,
-                                color: chapterState.getSelectedCellIndex(
-                                            chapterState.selectedBookId) !=
-                                        -1
+                                color: chapterState.selectedChapterId != null
                                     ? Colors.amber[600] // Enabled color
                                     : Colors.amber[600]?.withOpacity(
                                         0.5), // Disabled color with reduced opacity
@@ -234,10 +230,10 @@ class _ChaptersState extends State<Chapters>
                                                   return GestureDetector(
                                                     onTap: () async {
                                                       chapterState
-                                                          .setSelectedCellIndices(
+                                                          .setSelectedChapterId(
                                                         chapterState
-                                                            .selectedBookId,
-                                                        index,
+                                                                .chapter[index]
+                                                            ["_id"],
                                                       );
                                                       List<dynamic> chapters =
                                                           chapterState.chapter;
@@ -254,10 +250,10 @@ class _ChaptersState extends State<Chapters>
                                                           .listen((index) {
                                                         if (index != null) {
                                                           chapterState
-                                                              .setSelectedCellIndices(
+                                                              .setSelectedChapterId(
                                                             chapterState
-                                                                .selectedBookId,
-                                                            index,
+                                                                    .chapter[
+                                                                index]["_id"],
                                                           );
                                                         }
                                                       });
@@ -279,10 +275,11 @@ class _ChaptersState extends State<Chapters>
                                                       decoration: BoxDecoration(
                                                         color: Colors.white,
                                                         border: Border.all(
-                                                          color: index ==
-                                                                  chapterState.getSelectedCellIndex(
-                                                                      chapterState
-                                                                          .selectedBookId)
+                                                          color: chapterState
+                                                                      .selectedChapterId ==
+                                                                  chapterState.chapter[
+                                                                          index]
+                                                                      ["_id"]
                                                               ? Colors.red
                                                               : Colors
                                                                   .transparent,

@@ -63,7 +63,7 @@ class MyAppComponent extends State<MyApp> {
           initialRoute: 'splash',
           routes: {
             'Home': (context) => const MyHomePage(),
-            'Book': (context) => const BookMarkPage(),
+            // 'Book': (context) => const BookMarkPage(),
             'Menu': (context) => const SideMenu(),
             'bottom': (context) => const BottomBar(),
             'splash': (context) => const SplashScreen(),
