@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>RealtyKast.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>bitcode</key>
+			<false/>
+			<key>buildNumber</key>
+			<string>1.2.89</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>805A6C4F73A73C9F70DA756E6C38AAFAB5C8919E</string>
+				<key>dateExpires</key>
+				<string>23/03/24</string>
+				<key>type</key>
+				<string>Cloud Managed Apple Distribution</string>
+			</dict>
+			<key>embeddedBinaries</key>
+			<array>
+				<dict>
+					<key>architectures</key>
+					<array>
+						<string>arm64</string>
+					</array>
+					<key>bitcode</key>
+					<false/>
+					<key>buildNumber</key>
+					<string>0.11.0</string>
+					<key>certificate</key>
+					<dict>
+						<key>SHA1</key>
+						<string>805A6C4F73A73C9F70DA756E6C38AAFAB5C8919E</string>
+						<key>dateExpires</key>
+						<string>23/03/24</string>
+						<key>type</key>
+						<string>Cloud Managed Apple Distribution</string>
+					</dict>
+					<key>name</key>
+					<string>hermes.framework</string>
+					<key>symbols</key>
+					<true/>
+					<key>team</key>
+					<dict>
+						<key>id</key>
+						<string>JK6Z3KDP4P</string>
+						<key>name</key>
+						<string>Bizooda LLC</string>
+					</dict>
+					<key>versionNumber</key>
+					<string>0.11.0</string>
+				</dict>
+			</array>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>JK6Z3KDP4P.com.bizooda.realtykast</string>
+				<key>aps-environment</key>
+				<string>production</string>
+				<key>beta-reports-active</key>
+				<true/>
+				<key>com.apple.developer.applesignin</key>
+				<array>
+					<string>Default</string>
+				</array>
+				<key>com.apple.developer.pass-type-identifiers</key>
+				<array>
+					<string>JK6Z3KDP4P.pass.com.bizooda.realtykast</string>
+				</array>
+				<key>com.apple.developer.team-identifier</key>
+				<string>JK6Z3KDP4P</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>RealtyKast.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>e232d9d0-759a-4e07-9e62-6678ae0502d9</string>
+				<key>dateExpires</key>
+				<string>23/03/24</string>
+				<key>name</key>
+				<string>iOS Team Store Provisioning Profile: com.bizooda.realtykast</string>
+			</dict>
+			<key>symbols</key>
+			<true/>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>JK6Z3KDP4P</string>
+				<key>name</key>
+				<string>Bizooda LLC</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>1.2.89</string>
+		</dict>
+	</array>
+</dict>
+</plist>

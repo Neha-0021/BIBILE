@@ -28,7 +28,7 @@ void main() async {
     },
   );
   await Firebase.initializeApp();
-  NotificationHandler();
+  // await FirebaseMessaging.instance.subscribeToTopic("com.audioncb");
   NotificationHandler().getFcmToken();
   runApp(const MyApp());
 }
