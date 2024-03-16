@@ -118,11 +118,10 @@ class _MusicPlayerState extends State<MusicPlayer>
 
       await audioState.playChapter(
         chapterState.chapter,
-        nextIndex, // Use nextIndex instead of getSelectedCellIndex
+        nextIndex,
         bookName,
       );
 
-      // Fetch chapterId and deviceId
       String deviceId = _deviceId;
       chapterState.getBookMarkbychapterIddeviceId(chapterId, deviceId);
     }
@@ -130,17 +129,13 @@ class _MusicPlayerState extends State<MusicPlayer>
     String selectedChapterId = chapterState.selectedChapterId ?? "";
     String bookTitle = "";
 
-    // Find the index of the selected chapter
     int selectedIndex = chapterState.getChapterIndexById(selectedChapterId);
 
-    // Determine if a chapter is currently selected
     bool isChapterSelected = selectedIndex != -1;
 
     if (isChapterSelected) {
-      // Get the book ID of the selected chapter
       String bookId = chapterState.chapter[selectedIndex]["bookId"];
 
-      // Get the title of the book using the book ID
       bookTitle = chapterState.books.firstWhere((book) => book['_id'] == bookId,
               orElse: () => {})['title'] ??
           "";
